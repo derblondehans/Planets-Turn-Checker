@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         planets.nu Turn Checker
 // @namespace    planets-turn-checker
-// @version      0.2.0
+// @version      0.2.1
 // @description  Checks your planets.nu turn for common manual mistakes. Nothing is changed or sent to the game.
 // @license      Apache-2.0
 // @match        https://planets.nu/*
@@ -32,7 +32,10 @@
     const NATIVE_AMORPHOUS = 5;
     const DANGEROUS_PLANET_FC = /^(bum|dmp)$/i;
     const CLONE_FC = /^cln$/i;
-    const FOREIGN_BASE_FC = ["mkt", "lfm", "HYP"]; // exact spelling, case-sensitive
+    const MAKE_TORPEDOES_FC = /^mkt$/i;
+    const HULL_MERLIN = 105; // Merlin Class Alchemy Ship: turns supplies into minerals
+    const ALCHEMY_FC = /^(alm|ald|alt)$/i; // Merlin makes only molybdenum / duranium / tritanium
+    const FOREIGN_BASE_FC =["mkt", "lfm", "HYP"]; // exact spelling, case-sensitive
 
     // The checks. "error" findings are likely mistakes, "hint" findings may be intended.
     const CHECKS = [
@@ -327,6 +330,11 @@
         return parts;
     }
 
+    // mkt (any case) on a ship with torpedo launchers.
+    function buildsTorpedoes(ship) {
+        return MAKE_TORPEDOES_FC.test(ship.friendlycode || "") && ship.torps > 0;
+    }
+
     const shipChecks = {
         // S1: the fuel on board is less than the route needs. Arriving with 0 fuel is fine.
         S1(ship) {
@@ -360,18 +368,27 @@
         },
 
         // S5: cargo on board, standing at an own planet, not moving.
+        // Cargo the ship works with on board is not counted: supplies on a
+        // Merlin (alchemy), and minerals and MC on a torpedo ship with mkt.
         S5(ship) {
             if (isMoving(ship) || game.isTowed(ship)) return null;
             const planet = game.ownPlanetAt(ship.x, ship.y);
             if (!planet) return null;
-            const cargo = cargoOf(ship);
+            const counted = { ...ship };
+            if (ship.hullid === HULL_MERLIN) counted.supplies = 0;
+            if (buildsTorpedoes(ship))
+                counted.duranium = counted.tritanium = counted.molybdenum = counted.megacredits = 0;
+            const cargo = cargoOf(counted);
             if (cargo.length === 0) return null;
             return "stays at " + planetName(planet) + " with " + cargo.join(", ") + ". Unloading forgotten?";
         },
 
-        // S6: no destination and mission Explore (the default). Not repeated for ships S5 reports.
+        // S6: no destination and mission Explore (the default). Not repeated
+        // for ships S5 reports, and not for a Merlin set to make one mineral
+        // (alm / ald / alt, any case).
         S6(ship) {
             if (game.path(ship).length > 0 || ship.mission !== MISSION.EXPLORE || game.isTowed(ship)) return null;
+            if (ship.hullid === HULL_MERLIN && ALCHEMY_FC.test(ship.friendlycode || "")) return null;
             if (settings.enabled.S5 && shipChecks.S5(ship)) return null;
             return "has no destination and no mission.";
         },

@@ -4,6 +4,15 @@ All notable changes to this project are documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project uses [Semantic Versioning](https://semver.org/).
 
+## [0.2.1] - 2026-11-22
+
+### Changed
+
+- S5 no longer counts supplies on a Merlin, or minerals and MC on a torpedo
+  ship with `mkt` (any case): that cargo is being worked on, not forgotten.
+- S6 no longer lists a Merlin with the friendly code `alm`, `ald` or `alt`
+  (any case) as idle.
+
 ## [0.2.0] - 2026-11-22
 
 ### Added
@@ -30,4 +39,5 @@ Never published on its own; its changes are part of 0.2.0.
 - Settings: each check on or off, thresholds, stored in `localStorage`.
 - Compatibility check of the planets.nu client parts the script uses.
 
+[0.2.1]: https://github.com/derblondehans/Planets-Turn-Checker/compare/v0.2.0...v0.2.1
 [0.2.0]: https://github.com/derblondehans/Planets-Turn-Checker/releases/tag/v0.2.0

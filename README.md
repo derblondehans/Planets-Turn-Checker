@@ -47,8 +47,8 @@ when there are errors*). Un-marking a turn as ready is never checked.
 |----|-------|---------------|
 | S1 | Error | A ship has less fuel than its route needs (cloak fuel included). Arriving with 0 fuel is fine. |
 | S3 | Error | The mission does not fit the ship: laying mines without torpedoes, sweeping mines without beams (or fighters for the Colonies), towing without a target or with a target at another position, intercepting without a visible target. |
-| S5 | Hint | A ship with cargo (clans, minerals, supplies, MC) stays at an own planet and does not move. Unloading forgotten? |
-| S6 | Hint | A ship has no destination and the mission Explore. Not repeated for ships S5 lists. |
+| S5 | Hint | A ship with cargo (clans, minerals, supplies, MC) stays at an own planet and does not move. Unloading forgotten? Not counted: supplies on a Merlin (alchemy), and minerals and MC on a ship with torpedo launchers and the friendly code `mkt` (any case). |
+| S6 | Hint | A ship has no destination and the mission Explore. Not repeated for ships S5 lists, and not for a Merlin with the friendly code `alm`, `ald` or `alt` (any case). |
 | S8 | Error | A ship with the friendly code `mkt`, `lfm` (lower case) or `HYP` (upper case), in exactly this spelling, is at a planet with a starbase that is not yours. |
 | P1 | Error | Colonist happiness falls this turn and ends below the threshold (default 40). |
 | P2 | Error | Native happiness falls this turn and ends below the threshold (default 40). |
